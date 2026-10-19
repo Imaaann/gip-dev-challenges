@@ -1,30 +1,75 @@
 function main() {
     const input = document.getElementById("main-input");
     const error = document.getElementById("error");
+    const numpad = document.getElementById("buttons-container");
     assignButtonOperations(input, error);
+    document.addEventListener("keydown", navigate);
+    document.addEventListener("keydown", (e) => {
+        if (!numpad.contains(e.target) && e.key === "Enter") {
+            e.preventDefault();
+            displayCalculate(input, error);
+        }
+    });
 }
-
 
 const NUMPAD = [
     ["(", ")"],
-    ["c", "/", "*", "-"],
+    ["C", "/", "*", "-"],
     ["7", "8", "9", "+"],
     ["4", "5", "6", "+"],
     ["1", "2", "3", "="],
     ["0", ".", "="],
-]
+];
 
-let cursor = { 
+let cursor = {
     row: 0,
-    column: 0
-}
+    column: 0,
+};
 
-function navigate(e) { 
-    if (e.key == "ArrowUp" && e.shiftKey) {
-        document.getElementById("main-input").focus(); 
-    } else if (e.key == "ArrowUp") {
-        document.getElementById("")
+// Javascript and keeping the sign in modulo
+// and my hatred towards too many if statements
+const wrap = (n, len) => ((n % len) + len) % len;
+
+function navigate(e) {
+    const isInput = e.target.id === "main-input";
+
+    if (isInput) {
+        if (e.key === "ArrowDown" && e.shiftKey) {
+            e.preventDefault();
+            cursor.row = 0;
+            cursor.column = 0;
+            document.getElementById(NUMPAD[0][0]).focus();
+        }
+        return;
     }
+
+    
+    if (e.key === "ArrowUp" && e.shiftKey) {
+        e.preventDefault();
+        document.getElementById("main-input").focus();
+        return;
+    } else if (e.key === "ArrowUp") {
+        cursor.row = wrap(cursor.row - 1, NUMPAD.length);
+    } else if (e.key === "ArrowDown") {
+        cursor.row = wrap(cursor.row + 1, NUMPAD.length);
+    } else if (e.key === "ArrowLeft") {
+        cursor.column = wrap(cursor.column - 1, NUMPAD[cursor.row].length);
+    } else if (e.key === "ArrowRight") {
+        cursor.column = wrap(cursor.column + 1, NUMPAD[cursor.row].length);
+    }
+
+    // Clamp the column based on the new row
+    // Wide buttons yay!
+    cursor.column = Math.min(cursor.column, NUMPAD[cursor.row].length - 1);
+
+    const code = NUMPAD[cursor.row][cursor.column];
+
+    if (!code) {
+        throw new Error("Keyboard Navigation error, out of bounds");
+    }
+
+    const button = document.getElementById(code);
+    button.focus();
 }
 
 // Evaluate Equation
@@ -226,21 +271,23 @@ function createButtonClickOperation(code, input, error) {
     }
 
     if (code.toLowerCase() === "=") {
-        return () => {
-            try {
-                error.classList.add("hidden");
-                const result = calculate(input.value);
-                input.value = result;
-            } catch (err) {
-                error.classList.remove("hidden");
-                error.textContent = "(╥‸╥) Oh no | " +  err.message;
-            }
-        };
+        return () => displayCalculate(input, error);
     }
 
     return () => {
         input.value = input.value + code;
     };
+}
+
+function displayCalculate(input, error) {
+    try {
+        error.classList.add("hidden");
+        const result = calculate(input.value);
+        input.value = result;
+    } catch (err) {
+        error.classList.remove("hidden");
+        error.textContent = "(╥‸╥) Oh no | " + err.message;
+    }
 }
 
 function assignButtonOperations(input, error) {

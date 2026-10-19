@@ -1,40 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="./styles.css">
-	<script src="./app.js"></script>
-	<title>GIP Challenges - Frontend Tasks 1</title>
-</head>
-<body>
-	<div class="container">
-	    <h4>( ˶°ㅁ°) !! ... A Calculator</h4>
-	    <label for="main-input">Result</label>
-	    <input id="main-input"/>
-		<p class="error hidden" id="error"> Test error Balalall</p>
-		<div class="buttons-container" id="buttons-container">
-            <button class="operator span-horizontal">(</button>
-            <button class="operator span-horizontal">)</button>
-		    <button class="operator">C</button>
-		    <button class="operator">/</button>
-		    <button class="operator">*</button>
-		    <button class="operator">-</button>
-		    <button class="number">7</button>
-		    <button class="number">8</button>
-		    <button class="number">9</button>
-		    <button class="operator span-vertical">+</button>
-		    <button class="number">4</button>
-		    <button class="number">5</button>
-		    <button class="number">6</button>
-		    <button class="number">1</button>
-		    <button class="number">2</button>
-		    <button class="number">3</button>
-		    <button class="operator span-vertical">=</button>
-		    <button class="number span-horizontal">0</button>
-		    <button class="number">.</button>
-		</div>
-	</div>
-	
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./styles.css" />
+        <script src="./app.js"></script>
+        <title>GIP Challenges - Frontend Tasks 1</title>
+    </head>
+    <body>
+        <div class="container">
+            <h4>( ˶°ㅁ°) !! ... A Calculator</h4>
+            <label for="main-input">Result</label>
+            <input id="main-input" />
+            <p class="error hidden" id="error">Test error Balalall</p>
+            <div class="buttons-container" id="buttons-container">
+                <button class="operator span-horizontal">(</button>
+                <button class="operator span-horizontal">)</button>
+                <button class="operator">C</button>
+                <button class="operator">/</button>
+                <button class="operator">*</button>
+                <button class="operator">-</button>
+                <button class="number">7</button>
+                <button class="number">8</button>
+                <button class="number">9</button>
+                <button class="operator span-vertical">+</button>
+                <button class="number">4</button>
+                <button class="number">5</button>
+                <button class="number">6</button>
+                <button class="number">1</button>
+                <button class="number">2</button>
+                <button class="number">3</button>
+                <button class="operator span-vertical">=</button>
+                <button class="number span-horizontal">0</button>
+                <button class="number">.</button>
+            </div>
+            <p class="content">
+                <span>Keyboard Navigation!</span> <br />
+                - Arrows to move around<br />
+                - Shift + Up to go into the input<br />
+                - Shift + Down to go back into numpad mode<br />
+                - Enter to Submit (only in input mode)<br />
+            </p>
+        </div>
+    </body>
 </html>

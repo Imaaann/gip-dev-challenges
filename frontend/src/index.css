@@ -4,6 +4,7 @@ body {
         "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
     font-size: 1rem;
     color: #fafafa;
+    padding-bottom: 15rem;
 }
 
 .content {
@@ -54,4 +55,52 @@ body {
     text-align: center;
     cursor: pointer;
     font-size: 1.5rem;
+}
+
+.auto-container {
+    position: relative;
+    width: 70%;
+    max-width: 90%;
+    color: #fafafa;
+}
+
+.auto-container input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: #202020;
+    border: 1px solid #303030;
+    outline: none;
+    color: #fafafa;
+    font-size: 1rem;
+}
+
+.auto-container input:focus {
+    border-color: #808080;
+}
+
+.suggest-list {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    z-index: 10;
+
+    padding: 0.35rem;
+    background: #202020;
+    border: 1px solid #303030;
+
+    max-height: 10rem;
+    overflow-y: auto;
+}
+
+.suggest-list > div {
+    padding: 0.7rem 0.85rem;
+    color: #fafafab0;
+    cursor: pointer;
+}
+
+.suggest-list > div:hover {
+    background: #ffffff12;
+    color: #fff;
 }

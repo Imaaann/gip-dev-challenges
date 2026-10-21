@@ -8,6 +8,7 @@ import { RouterProvider } from "react-router/dom";
 import Home from "./screens/Home.tsx";
 import BitStrings from "./screens/BitStrings.tsx";
 import SmallestInt from "./screens/SmallestInt.tsx";
+import AutoCompleteScreen from "./screens/AutoComplete.tsx";
 
 const router = createBrowserRouter([
     {
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/autocomplete",
-                element: <PlaceHolder text="Frontend #1" />,
+                element: <AutoCompleteScreen/> 
             },
             {
                 path: "/smallest_int",

@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: gip
+      POSTGRES_PASSWORD: gip0dev
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - "pgdata:/var/lib/postgresql"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gip -d db"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  pgdata:

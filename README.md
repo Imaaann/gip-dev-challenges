@@ -47,6 +47,6 @@ To launch the program all you need to do is:
 4. Run `NODE_ENV=production pnpm start` on the backend folder
 5. Visit localhost
 
-Alternatively You can check the [Live Link]()
+Alternatively You can check the [Live Link](https://gip-dev-challenges.onrender.com)
 Everything is hosted on render.
 Hope everything is satisfactory

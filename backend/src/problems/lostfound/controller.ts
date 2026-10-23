@@ -1,6 +1,7 @@
 import z from "zod";
 import { validateBody } from "../../middleware";
 import { pool } from "../../db";
+import { ConflictError, HttpError } from "../../errors";
 
 const reportSchema = z.object({
     id: z.uuid(),
@@ -118,7 +119,7 @@ type ResolveDTO = z.infer<typeof resolveDTOSchema>;
 
 export async function resolve(payload: ResolveDTO) {
     if (payload.resolved_id == payload.to_resolve)
-        throw new Error("Id's of resolved and resolvee must differ");
+        throw new ConflictError("Id's of resolved and resolvee must differ");
     const client = await pool.connect();
 
     try {
@@ -134,14 +135,14 @@ export async function resolve(payload: ResolveDTO) {
         // Some sanity checks
         if (results.rows.length !== 2) throw new Error("Rows not found");
         if (results.rows[0].type === results.rows[1].type)
-            throw new Error("Need one lost, one found report pair");
+            throw new HttpError(400, "Need one lost, one found report pair");
         if (results.rows[0].resolved_id || results.rows[1].resolved_id)
-            throw new Error("Already resolved");
+            throw new ConflictError("Already resolved");
         if (
             results.rows.find((r) => r.id === payload.to_resolve)!.username !==
             payload.username
         )
-            throw new Error("Forbidden Operation");
+            throw new HttpError(403, "Forbidden Operation");
 
         // Love Atomic instruction bs
         const update = await client.query<Report>(

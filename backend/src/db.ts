@@ -27,7 +27,7 @@ export async function migrate() {
         .readdirSync(migrations)
         .sort()
         .map((fileName) => path.join(migrations, fileName))
-        .filter(f => path.extname(f) === ".sql");
+        .filter((f) => path.extname(f) === ".sql");
 
     for (const filePath of migrationFiles) {
         const client = await pool.connect();
@@ -41,8 +41,8 @@ export async function migrate() {
             );
             if (rows[0] && rows[0].ran) {
                 await client.query("COMMIT");
-                continue
-            };
+                continue;
+            }
 
             await client.query(sql);
             await client.query(
@@ -52,7 +52,7 @@ export async function migrate() {
             await client.query("COMMIT");
         } catch (err) {
             await client.query("ROLLBACK");
-            console.error(`Migrations Failed, File Name: ${filePath}.`); 
+            console.error(`Migrations Failed, File Name: ${filePath}.`);
             throw err;
         } finally {
             client.release();

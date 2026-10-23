@@ -3,6 +3,14 @@ import z, { ZodObject } from "zod";
 import jwt from "jsonwebtoken";
 import { AuthError, HttpError } from "./errors";
 import { JWT_SECRET } from "./problems/auth/controller";
+import { exit } from "process";
+
+export const ADMIN_KEY = process.env.ADMIN_KEY;
+
+if (!ADMIN_KEY) {
+    console.error("Environment var ADMIN_KEY not set!");
+    exit(1);
+}
 
 export function validateBody<T extends ZodObject>(
     schema: T,
@@ -64,4 +72,23 @@ export const authenticate: RequestHandler = (req, res, next) => {
     }
 
     next();
+};
+
+export const adminOnly: RequestHandler = (req, res, next) => {
+    const auth = req.header("Authorization")
+
+    if (!auth) {
+        res.status(401).json({
+            error: "Missing admin Authorization"
+        })
+        return;
+    }
+
+    if (auth === ADMIN_KEY!) {
+        next()
+    } else {
+        res.status(401).json({
+            error: "Missing admin Authorization"
+        })
+    }
 };

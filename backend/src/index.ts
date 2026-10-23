@@ -2,6 +2,7 @@ import express from "express";
 import { migrate, pool } from "./db";
 import { router as lostRouter } from "./problems/lostfound/router";
 import { router as authRouter } from "./problems/auth/router";
+import { router as saleRouter } from "./problems/flashsale/router";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middleware";
 
@@ -10,6 +11,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/lostfound", lostRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/sale", saleRouter);
 app.use(errorHandler);
 
 app.get("/health", async (req, res) => { 

@@ -1,15 +1,18 @@
 function generateIntArray(amount: number) {
     return Array.from({ length: amount }).map(
-        () => Math.floor(Math.random() * 1024) - 512,
+        () => Math.floor(Math.random() * 24) - 6,
     );
 }
 
 function findSmallestPostivieInt(numbers: number[]) {
-    const maxFound = numbers.reduce((acc, n) => {
-        return n <= acc ? acc : n;
-    });
-
-    return Math.max(0, maxFound + 1);
+    return numbers.sort((a, b) => a - b).reduce((acc, n) => {
+        if (n === acc) {
+            return acc + 1;
+        }
+        
+        
+        return acc;
+    }, 0)
 }
 
 export { findSmallestPostivieInt, generateIntArray };

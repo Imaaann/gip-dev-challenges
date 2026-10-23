@@ -25,7 +25,6 @@ function BitStrings() {
             Found Different = ${different}. \n
             Checked = ${check}. \n
           `;
-        console.log(logs);
         setLogs(logs);
         
         setShow(true);

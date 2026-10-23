@@ -7,7 +7,6 @@ const password = "GIP-dev-challenge-123";
 describe("signup", () => {
     it("creates a user w/o leaking the hash", async () => {
         const result = await call_auth("POST", "/signup", { email, password });
-        console.log(JSON.stringify(result, null, 2));
         expect(result.status).toBe(201);
         expect(result.body.email).toBe(email);
         expect(JSON.stringify(result.body)).not.toContain("password");

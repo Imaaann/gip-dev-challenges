@@ -1,5 +1,6 @@
 export const BASE_LOSTFOUND = "http://localhost:8000/api/lostfound";
 export const BASE_AUTH = "http://localhost:8000/api/auth";
+export const BASE_SALE = "http://localhost:8000/api/sale";
 export const TAG = `t${Math.random().toString(36).slice(2, 8)}`;
 
 async function call(
@@ -34,11 +35,25 @@ async function call(
     };
 }
 
+export async function call_sale(
+    method: string,
+    path = "",
+    body?: unknown,
+    headers = {},
+) {
+    return await call(method, BASE_SALE, path, body, false, headers);
+}
+
 export function newEmail() {
     return `u${Math.random().toString(36).slice(2, 8)}@test.com`;
 }
 
-export async function call_auth(method: string, path = "", body?: unknown, headers = {}) {
+export async function call_auth(
+    method: string,
+    path = "",
+    body?: unknown,
+    headers = {},
+) {
     return await call(method, BASE_AUTH, path, body, true, headers);
 }
 
@@ -65,11 +80,28 @@ export async function make_report(
     return result.body.id as string;
 }
 
-export async function  login(email: string, password: string) {
+export async function login(email: string, password: string) {
     const result = await call_auth("POST", "/login", { email, password });
-    const cookie = result.cookies!.find(c => c.startsWith("refresh_token="))!.split(".")[0]; 
+    const cookie = result
+        .cookies!.find((c) => c.startsWith("refresh_token="))!
+        .split(".")[0];
     return {
         accessToken: result.body.accessToken as string,
-        cookie
-    }
+        cookie,
+    };
 }
+
+export async function make_product(quantity: number = 5) {
+    const info = {
+        name: `SALE-${TAG}+${Math.random().toString(36).slice(0, 4)}`,
+        quantity
+    };
+
+    const res = await call_sale("POST", "", info, {
+        Authorization: process.env.ADMIN_KEY,
+    });
+
+    return res.body.data.product_id as number;
+}
+
+

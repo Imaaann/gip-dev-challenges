@@ -43,7 +43,6 @@ function navigate(e) {
         return;
     }
 
-    
     if (e.key === "ArrowUp" && e.shiftKey) {
         e.preventDefault();
         document.getElementById("main-input").focus();

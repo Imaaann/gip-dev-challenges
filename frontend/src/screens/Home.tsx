@@ -13,7 +13,7 @@ function Home() {
                     submissions, the frontend design is quite rushed as I didn't
                     really bother with. <br />
                     <br />
-                    <br/>
+                    <br />
                     NOTE: Task 1, frontend is served through normal HTMl, CSS,
                     JS you can check the network tab its pure vanilla.
                 </p>
@@ -26,11 +26,19 @@ function Home() {
             </ContentBox>
             <ContentBox>
                 <p>
-                    As for navigating the code base, the relevant non glue code is all going to be in the [<code>/solutions</code>] directory 
-              </p>
+                    As for navigating the code base, the relevant non glue code
+                    is all going to be in the [<code>/solutions</code>]
+                    directory
+                </p>
+            </ContentBox>
+            <ContentBox>
+                <p>In case anything is going off with the live host</p>
+                <a href="https://github.com/Imaaann/gip-dev-challenges">
+                    Github Link
+                </a>
             </ContentBox>
         </>
     );
 }
 
-export default Home
+export default Home;

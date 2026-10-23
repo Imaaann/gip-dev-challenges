@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter } from "react-router";
-import PlaceHolder from "./components/PlaceHolder.tsx";
 import { RouterProvider } from "react-router/dom";
 import Home from "./screens/Home.tsx";
 import BitStrings from "./screens/BitStrings.tsx";

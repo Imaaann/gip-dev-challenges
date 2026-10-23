@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { call, make_report, TAG } from "./helper";
+import { call_lostfound as call, make_report, TAG } from "./helper";
 
 const content = {
     lost: "",

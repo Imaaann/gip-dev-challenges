@@ -12,7 +12,6 @@ pnpm build
 mkdir -p dist/migrations
 cp -r src/migrations/. dist/migrations/
 cp openapi.yml dist/
-cp .env dist/.env.production
 
 mkdir -p dist/public/calculator dist/public/app
 

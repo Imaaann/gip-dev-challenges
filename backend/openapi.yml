@@ -1,2 +1,203 @@
 openapi: 3.0.3
 info: {title: "GIP-Dev Challenges", version: 1.0.0}
+paths:
+    /health:
+      get:
+        responses:
+          "200": { description: "Health Check for service"}
+        deprecated: false
+    /api/lostfound:
+      get:
+        tags: [Lost and Found]
+        summary: List all reports
+        responses:
+          "200": { description: All reports, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Report" } } } } }
+      post:
+        tags: [Lost and Found]
+        summary: Create a report (starts unresolved)
+        requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateReport" } } } }
+        responses:
+          "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Report" } } } }
+          "400": { description: Malformed body }
+      patch:
+        tags: [Lost and Found]
+        summary: Edit title or description (owner only)
+        requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/EditReport" } } } }
+        responses:
+          "200": { description: Updated, content: { application/json: { schema: { $ref: "#/components/schemas/Report" } } } }
+          "400": { description: Malformed body }
+          "404": { description: Not found or not owned by this username }
+    /api/lostfound/search:
+      get:
+        tags: [Lost and Found]
+        summary: Search reports (title and description match partially, ignoring case)
+        parameters:
+          - { in: query, name: type, schema: { type: string, enum: [lost, found] } }
+          - { in: query, name: title, schema: { type: string } }
+          - { in: query, name: description, schema: { type: string } }
+          - { in: query, name: resolved, schema: { type: boolean } }
+        responses:
+          "200": { description: Object with count and a data array of reports }
+          "400": { description: Malformed query parameters }
+    /api/lostfound/{id}:
+      get:
+        tags: [Lost and Found]
+        summary: Get one report
+        parameters:
+          - { in: path, name: id, required: true, schema: { type: string, format: uuid } }
+        responses:
+          "200": { description: The report, content: { application/json: { schema: { $ref: "#/components/schemas/Report" } } } }
+          "400": { description: Id is not a UUID }
+          "404": { description: Not found }
+    /api/lostfound/resolve:
+      patch:
+        tags: [Lost and Found]
+        summary: Pair a lost report with a found report (either direction)
+        requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/ResolveRequest" } } } }
+        responses:
+          "200": { description: Both updated reports, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Report" } } } } }
+          "400": { description: Same id on both sides or both reports share a type }
+          "403": { description: username does not own to_resolve }
+          "404": { description: A report was not found }
+          "409": { description: A report is already resolved }
+    /api/auth/signup:
+        post:
+          tags: [Auth]
+          summary: Create an account
+          requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Credentials" } } } }
+          responses:
+            "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/User" } } } }
+            "400": { description: Invalid email or password shorter than 8 characters }
+            "409": { description: Email already registered (case-insensitive) }
+    /api/auth/login:
+        post:
+          tags: [Auth]
+          summary: Log in, returns an access token and sets the refresh cookie
+          description: The refresh token is set as an httpOnly cookie scoped to /api/auth and is never in the body.
+          requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Credentials" } } } }
+          responses:
+            "200": { description: Logged in, content: { application/json: { schema: { $ref: "#/components/schemas/LoginResponse" } } } }
+            "400": { description: Malformed body }
+            "401": { description: Invalid credentials (same response for wrong password and unknown email) }
+    /api/auth/refresh:
+      post:
+        tags: [Auth]
+        summary: Rotate the refresh token and get a new access token
+        description: Reads the refresh_token cookie. Each refresh token works exactly once.
+        responses:
+          "200": { description: New access token, new refresh cookie set, content: { application/json: { schema: { type: object, properties: { accessToken: { type: string } } } } } }
+          "401": { description: Missing, expired, or already used refresh token (cookie is cleared) }
+    /api/auth/logout:
+      post:
+        tags: [Auth]
+        summary: Revoke the refresh token and clear the cookie
+        description: Always returns 204, even with no cookie or an unknown token.
+        responses:
+          "204": { description: Logged out }
+    /api/auth/me:
+      get:
+        tags: [Auth]
+        summary: Current user
+        security: [{ bearerAuth: [] }]
+        responses:
+          "200": { description: The user, content: { application/json: { schema: { $ref: "#/components/schemas/User" } } } }
+          "401": { description: Missing, invalid, or expired access token }
+    /api/sale:
+      get:
+        tags: [Flash Sale]
+        summary: List all products with remaining stock
+        responses:
+          "200": { description: Count and products, content: { application/json: { schema: { $ref: "#/components/schemas/ProductList" } } } }
+      post:
+        tags: [Flash Sale]
+        summary: Add a product (admin only)
+        security: [{ adminKey: [] }]
+        requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/CreateProduct" } } } }
+        responses:
+          "201": { description: Created, content: { application/json: { schema: { type: object, properties: { count: { type: integer }, data: { $ref: "#/components/schemas/Product" } } } } } }
+          "400": { description: Malformed body, quantity must be an integer of 0 or more }
+          "401": { description: Missing or wrong admin key }
+    /api/sale/buy:
+        post:
+          tags: [Flash Sale]
+          summary: Buy one unit (atomic and idempotent)
+          description: Retrying with the same Idempotency-Key never buys twice, it returns the original purchase. Use a new key for each new purchase.
+          parameters:
+            - { in: header, name: Idempotency-Key, required: true, schema: { type: string, format: uuid } }
+          requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Buy" } } } }
+          responses:
+            "201": { description: Purchased, content: { application/json: { schema: { $ref: "#/components/schemas/Purchase" } } } }
+            "200": { description: Replay of an earlier purchase with the same key, content: { application/json: { schema: { $ref: "#/components/schemas/Purchase" } } } }
+            "400": { description: Malformed body or Idempotency-Key is not a UUID }
+            "404": { description: Product does not exist }
+            "409": { description: Sold out }
+            "422": { description: Key already used for a different product }
+    /api/sale/view/{name}:
+      get:
+        tags: [Flash Sale]
+        summary: Purchases made by a username
+        parameters:
+          - { in: path, name: name, required: true, schema: { type: string } }
+        responses:
+          "200": { description: Count and purchases, content: { application/json: { schema: { $ref: "#/components/schemas/PurchaseList" } } } } 
+components:
+  schemas:
+    Report:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        username: { type: string }
+        title: { type: string }
+        description: { type: string }
+        type: { type: string, enum: [lost, found] }
+        resolved_id: { type: string, format: uuid, nullable: true }
+        created_at: { type: string, format: date-time }
+    CreateReport:
+      type: object
+      required: [username, title, description, type]
+      properties: { username: { type: string }, title: { type: string }, description: { type: string }, type: { type: string, enum: [lost, found] } }
+    EditReport:
+      type: object
+      required: [id, username]
+      properties: { id: { type: string, format: uuid }, username: { type: string }, title: { type: string }, description: { type: string } }
+    ResolveRequest:
+      type: object
+      required: [to_resolve, resolved_id, username]
+      properties: { to_resolve: { type: string, format: uuid }, resolved_id: { type: string, format: uuid }, username: { type: string } }
+    Credentials:
+      type: object
+      required: [email, password]
+      properties: { email: { type: string, format: email }, password: { type: string, minLength: 8 } }
+    User:
+      type: object
+      properties: { user_id: { type: integer }, email: { type: string }, created_at: { type: string, format: date-time } }
+    LoginResponse:
+      type: object
+      properties:
+        accessToken: { type: string }
+        user: { type: object, properties: { user_id: { type: integer }, email: { type: string } } }
+    Product:
+          type: object
+          properties: { product_id: { type: integer }, name: { type: string }, quantity: { type: integer, description: Units remaining } }
+    ProductList:
+      type: object
+      properties: { count: { type: integer }, data: { type: array, items: { $ref: "#/components/schemas/Product" } } }
+    CreateProduct:
+      type: object
+      required: [name, quantity]
+      properties: { name: { type: string }, quantity: { type: integer, minimum: 0 } }
+    Buy:
+      type: object
+      required: [username, product_id]
+      properties: { username: { type: string }, product_id: { type: integer, minimum: 1 } }
+    Purchase:
+      type: object
+      properties: { purchase_id: { type: integer }, product_id: { type: integer }, username: { type: string }, key: { type: string, format: uuid }, replay: { type: boolean } }
+    PurchaseList:
+      type: object
+      properties:
+        count: { type: integer }
+        data: { type: array, items: { type: object, properties: { id: { type: integer }, name: { type: string } } } }
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+    adminKey: { type: apiKey, in: header, name: Authorization }

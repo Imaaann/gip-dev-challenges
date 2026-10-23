@@ -1,3 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
+import YAML from "yaml";
+import swaggerUi from "swagger-ui-express";
 import express from "express";
 import { migrate, pool } from "./db";
 import { router as lostRouter } from "./problems/lostfound/router";
@@ -12,6 +16,13 @@ app.use(express.json());
 app.use("/api/lostfound", lostRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/sale", saleRouter);
+
+const spec = YAML.parse(
+    fs.readFileSync(path.join(process.cwd(), "openapi.yml"), "utf8"),
+);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+
 app.use(errorHandler);
 
 app.get("/health", async (req, res) => { 

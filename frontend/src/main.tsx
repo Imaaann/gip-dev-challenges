@@ -9,6 +9,7 @@ import Home from "./screens/Home.tsx";
 import BitStrings from "./screens/BitStrings.tsx";
 import SmallestInt from "./screens/SmallestInt.tsx";
 import AutoCompleteScreen from "./screens/AutoComplete.tsx";
+import BackendChallenge from "./screens/BackendChallenge.tsx";
 
 const router = createBrowserRouter([
     {
@@ -33,15 +34,15 @@ const router = createBrowserRouter([
             },
             {
                 path: "/auth_api",
-                element: <PlaceHolder text="Backend #2" />,
+                element: <BackendChallenge title="Authentication API (/api/auth)" />,
             },
             {
                 path: "/lost_found",
-                element: <PlaceHolder text="Backend #1" />,
+                element: <BackendChallenge title="Lost & Found API (/api/lostfound)" />,
             },
             {
                 path: "/sales",
-                element: <PlaceHolder text="Backend #3" />,
+                element: <BackendChallenge title="Flash Sale Races (/api/sale)" />,
             },
         ],
     },

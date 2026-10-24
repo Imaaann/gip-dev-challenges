@@ -3,9 +3,18 @@ info: {title: "GIP-Dev Challenges", version: 1.0.0}
 paths:
     /health:
       get:
+        tags: ["System"]
+        summary: "Health Check (and verified DB Connection)"
         responses:
-          "200": { description: "Health Check for service"}
-        deprecated: false
+          "200":
+              description: Service and DB are Up!
+              content:
+                application/json:
+                  schema:
+                      type: object
+                      properties:
+                        ok: {type: boolean}
+                        dbTime: {type: string, format: date-time}
     /api/lostfound:
       get:
         tags: [Lost and Found]

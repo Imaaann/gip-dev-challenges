@@ -41,11 +41,13 @@ There is also a test suite that can be ran on the backend via `pnpm test` it inc
 
 To launch the program all you need to do is:
 
-1. Create the `.env` File based on the `.env.example` File provided.
+1. Create the `.env` File based on the `.env.example` File provided (Used for development).
 2. Run `./build.sh` on the project root
-3. Run `docker compose up -d db` to run the database (Make sure the URL in env is correct)
+3. Run `docker compose up -d db` to run the database (Make sure 'DATABASE_URL' is correct)
+4. Export **EVERY** variable in `.env` to your shell environment
 4. Run `NODE_ENV=production pnpm start` on the backend folder
-5. Visit localhost
+> Production doesn't read the .env file and relies on the env to be in the shell context.
+5. Visit `http://localhost:8000`
 
 Alternatively You can check the [Live Link](https://gip-dev-challenges.onrender.com)
 Everything is hosted on render.

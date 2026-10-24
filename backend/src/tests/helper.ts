@@ -1,6 +1,10 @@
-export const BASE_LOSTFOUND = "http://localhost:8000/api/lostfound";
-export const BASE_AUTH = "http://localhost:8000/api/auth";
-export const BASE_SALE = "http://localhost:8000/api/sale";
+const BASE_HOST =
+    process.env.NODE_ENV === "production"
+        ? "https://gip-dev-challenges.onrender.com/"
+        : "http://localhost:8000/";
+export const BASE_LOSTFOUND = BASE_HOST + "api/lostfound";
+export const BASE_AUTH = BASE_HOST + "api/auth";
+export const BASE_SALE = BASE_HOST + "api/sale";
 export const TAG = `t${Math.random().toString(36).slice(2, 8)}`;
 
 async function call(
@@ -94,7 +98,7 @@ export async function login(email: string, password: string) {
 export async function make_product(quantity: number = 5) {
     const info = {
         name: `SALE-${TAG}+${Math.random().toString(36).slice(0, 4)}`,
-        quantity
+        quantity,
     };
 
     const res = await call_sale("POST", "", info, {
@@ -103,5 +107,3 @@ export async function make_product(quantity: number = 5) {
 
     return res.body.data.product_id as number;
 }
-
-
